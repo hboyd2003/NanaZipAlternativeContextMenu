@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <SignAssembly>False</SignAssembly>
+        <Title>Nana Zip Context</Title>
+        <Authors>Harrison Boyd</Authors>
+        <Copyright>GNU GPLv3</Copyright>
+        <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+        <PreserveCompilationContext>False</PreserveCompilationContext>
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <PublishReadyToRun>true</PublishReadyToRun>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <FileAlignment>512</FileAlignment>
+        <DebugType>embedded</DebugType>
+        <Optimize>False</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <FileAlignment>512</FileAlignment>
+        <DebugType>embedded</DebugType>
+        <PreserveCompilationContext>False</PreserveCompilationContext>
+    </PropertyGroup>
+
+
+</Project>

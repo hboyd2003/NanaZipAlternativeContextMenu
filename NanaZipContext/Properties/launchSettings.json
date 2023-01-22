@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NanaZipContext": {
+      "commandName": "Project",
+      "commandLineArgs": "\"decompress\" \"C:\\Program Files\\Subsimplicity.zip\""
+    }
+  }
+}
