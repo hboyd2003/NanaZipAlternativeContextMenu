@@ -1,51 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <shell>
-    <menu separator="true"/>
-    <menu separator="true"/>
-    <menu name="Extract to .\${selection.filename.noext}">
-      <icon path="${config.directory}\Icons\NanaZipSfx.ico" index="0" />
-      <visibility class="file" fileextensions="001;7z;apfs;arj;bz2;bzip2;cab;cpio;deb;dmg;esd;fat;gzip;hfs;hfsx;iso;lha;liz;lz;lz4;lz5;lzh;lzma;ntfs;rar;rpm;squashfs;swm;tar;taz;tbz;tbz2;tgz;tlz;tpz;txz;vhd;vhdx;wim;xar;xz;z;zip;zst" maxfiles="1"/>
-      <actions>
-        <exec path="${config.directory}\Tools\NanaZipContext.exe" arguments="&quot;decompress&quot; &quot;${selection.path}&quot;" basedir="C:\"/>
-      </actions>
-    </menu>  
+    <shell>
+        <menu separator="true"/>
+        <menu separator="true"/>
+        <menu name="Extract to .\${selection.filename.noext}">
+            <icon path="${config.directory}\Icons\NanaZipSfx.ico" index="0"/>
+            <visibility class="file"
+                        fileextensions="001;7z;apfs;arj;bz2;bzip2;cab;cpio;deb;dmg;esd;fat;gzip;hfs;hfsx;iso;lha;liz;lz;lz4;lz5;lzh;lzma;ntfs;rar;rpm;squashfs;swm;tar;taz;tbz;tbz2;tgz;tlz;tpz;txz;vhd;vhdx;wim;xar;xz;z;zip;zst"
+                        maxfiles="1"/>
+            <actions>
+                <exec path="${config.directory}\Tools\NanaZipContext.exe"
+                      arguments="&quot;decompress&quot; &quot;${selection.path}&quot;" basedir="C:\"/>
+            </actions>
+        </menu>
 
-    <menu name="Extract to .\*">
-      <icon path="${config.directory}\Icons\NanaZipSfx.ico" index="0"/>
-      <visibility class="file" fileextensions="001;7z;apfs;arj;bz2;bzip2;cab;cpio;deb;dmg;esd;fat;gzip;hfs;hfsx;iso;lha;liz;lz;lz4;lz5;lzh;lzma;ntfs;rar;rpm;squashfs;swm;tar;taz;tbz;tbz2;tgz;tlz;tpz;txz;vhd;vhdx;wim;xar;xz;z;zip;zst" exprtk="${selection.count} >= 2"/>
-      <actions>
-        <property name="selection.multi.separator" value="," />
-        <exec path="${config.directory}\Tools\NanaZipContext.exe" arguments="&quot;decompress&quot; &quot;${selection.path}&quot;" basedir="C:\"/>
-      </actions>
-    </menu>
- 
-    <menu name="Extract to .\${selection.filename.noext} and Recycle">
-      <icon path="${config.directory}\Icons\NanaZipSfx.ico" index="0" />
-      <visibility class="file" fileextensions="001;7z;apfs;arj;bz2;bzip2;cab;cpio;deb;dmg;esd;fat;gzip;hfs;hfsx;iso;lha;liz;lz;lz4;lz5;lzh;lzma;ntfs;rar;rpm;squashfs;swm;tar;taz;tbz;tbz2;tgz;tlz;tpz;txz;vhd;vhdx;wim;xar;xz;z;zip;zst" maxfiles="1"/>
-      <actions>
-        <property name="selection.multi.separator" value="," />
-        <exec path="${config.directory}\Tools\NanaZipContext.exe" arguments="&quot;decompressAndRecycle&quot; &quot;${selection.path}&quot;" basedir="C:\"/>
-      </actions>
-    </menu>  
+        <menu name="Extract to .\*">
+            <icon path="${config.directory}\Icons\NanaZipSfx.ico" index="0"/>
+            <visibility class="file"
+                        fileextensions="001;7z;apfs;arj;bz2;bzip2;cab;cpio;deb;dmg;esd;fat;gzip;hfs;hfsx;iso;lha;liz;lz;lz4;lz5;lzh;lzma;ntfs;rar;rpm;squashfs;swm;tar;taz;tbz;tbz2;tgz;tlz;tpz;txz;vhd;vhdx;wim;xar;xz;z;zip;zst"
+                        exprtk="${selection.count} >= 2"/>
+            <actions>
+                <property name="selection.multi.separator" value=","/>
+                <exec path="${config.directory}\Tools\NanaZipContext.exe"
+                      arguments="&quot;decompress&quot; &quot;${selection.path}&quot;" basedir="C:\"/>
+            </actions>
+        </menu>
 
-    <menu name="Extract to .\* and Recycle">
-      <icon path="${config.directory}\Icons\NanaZipSfx.ico" index="0"/>
-      <visibility class="file" fileextensions="001;7z;apfs;arj;bz2;bzip2;cab;cpio;deb;dmg;esd;fat;gzip;hfs;hfsx;iso;lha;liz;lz;lz4;lz5;lzh;lzma;ntfs;rar;rpm;squashfs;swm;tar;taz;tbz;tbz2;tgz;tlz;tpz;txz;vhd;vhdx;wim;xar;xz;z;zip;zst" exprtk="${selection.count} >= 2"/>
-      <actions>
-        <property name="selection.multi.separator" value="," />
-        <exec path="${config.directory}\Tools\NanaZipContext.exe" arguments="&quot;decompressAndRecycle&quot; &quot;${selection.path}&quot;" basedir="C:\"/>
-      </actions>
-    </menu>
+        <menu name="Extract to .\${selection.filename.noext} and Recycle">
+            <icon path="${config.directory}\Icons\NanaZipSfx.ico" index="0"/>
+            <visibility class="file"
+                        fileextensions="001;7z;apfs;arj;bz2;bzip2;cab;cpio;deb;dmg;esd;fat;gzip;hfs;hfsx;iso;lha;liz;lz;lz4;lz5;lzh;lzma;ntfs;rar;rpm;squashfs;swm;tar;taz;tbz;tbz2;tgz;tlz;tpz;txz;vhd;vhdx;wim;xar;xz;z;zip;zst"
+                        maxfiles="1"/>
+            <actions>
+                <property name="selection.multi.separator" value=","/>
+                <exec path="${config.directory}\Tools\NanaZipContext.exe"
+                      arguments="&quot;decompressAndRecycle&quot; &quot;${selection.path}&quot;" basedir="C:\"/>
+            </actions>
+        </menu>
 
-    <menu name="Add to Archive">
-      <icon path="${config.directory}\Icons\NanaZip.ico" fileextensions="001;7z;apfs;arj;bz2;bzip2;cab;cpio;deb;dmg;esd;fat;gzip;hfs;hfsx;iso;lha;liz;lz;lz4;lz5;lzh;lzma;ntfs;rar;rpm;squashfs;swm;tar;taz;tbz;tbz2;tgz;tlz;tpz;txz;vhd;vhdx;wim;xar;xz;z;zip;zst" inverse="fileextensions" index="0"/>
-      <visibility class="file;directory"/>
-      <actions>
-        <property name="selection.multi.separator" value="," />
-        <exec path="${config.directory}\Tools\NanaZipContext.exe" arguments="&quot;addToArchive&quot; &quot;${selection.path}&quot;" basedir="C:\"/>
-      </actions>
-    </menu>
-    <menu separator="true"/>
-  </shell>
+        <menu name="Extract to .\* and Recycle">
+            <icon path="${config.directory}\Icons\NanaZipSfx.ico" index="0"/>
+            <visibility class="file"
+                        fileextensions="001;7z;apfs;arj;bz2;bzip2;cab;cpio;deb;dmg;esd;fat;gzip;hfs;hfsx;iso;lha;liz;lz;lz4;lz5;lzh;lzma;ntfs;rar;rpm;squashfs;swm;tar;taz;tbz;tbz2;tgz;tlz;tpz;txz;vhd;vhdx;wim;xar;xz;z;zip;zst"
+                        exprtk="${selection.count} >= 2"/>
+            <actions>
+                <property name="selection.multi.separator" value=","/>
+                <exec path="${config.directory}\Tools\NanaZipContext.exe"
+                      arguments="&quot;decompressAndRecycle&quot; &quot;${selection.path}&quot;" basedir="C:\"/>
+            </actions>
+        </menu>
+
+        <menu name="Add to Archive">
+            <icon path="${config.directory}\Icons\NanaZip.ico"
+                  fileextensions="001;7z;apfs;arj;bz2;bzip2;cab;cpio;deb;dmg;esd;fat;gzip;hfs;hfsx;iso;lha;liz;lz;lz4;lz5;lzh;lzma;ntfs;rar;rpm;squashfs;swm;tar;taz;tbz;tbz2;tgz;tlz;tpz;txz;vhd;vhdx;wim;xar;xz;z;zip;zst"
+                  inverse="fileextensions" index="0"/>
+            <visibility class="file;directory"/>
+            <actions>
+                <property name="selection.multi.separator" value=","/>
+                <exec path="${config.directory}\Tools\NanaZipContext.exe"
+                      arguments="&quot;addToArchive&quot; &quot;${selection.path}&quot;" basedir="C:\"/>
+            </actions>
+        </menu>
+        <menu separator="true"/>
+    </shell>
 </root>
