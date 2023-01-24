@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 
-
 using System.Diagnostics;
 using System.Security.AccessControl;
 using System.Security.Principal;
@@ -31,52 +30,43 @@ var outputPath =
     throw new Exception(
         "Failed to get directory name"); //Should be impossible for you to run the command on multiple files in different directories.
 
-var isAdministrator = new WindowsPrincipal(WindowsIdentity.GetCurrent())
-    .IsInRole(WindowsBuiltInRole.Administrator);
+var needFolderWriteAccess = false;
+var needFileReadAccess = false;
+var needFileWriteAccess = false;
 
-var needWriteAccess = false;
-var needReadAccess = false;
-
-if (!isAdministrator)
-    needWriteAccess =
+if (!new WindowsPrincipal(WindowsIdentity.GetCurrent())
+        .IsInRole(WindowsBuiltInRole.Administrator))
+{
+    needFolderWriteAccess =
         CheckPermissions(outputPath) != "Write"; //Checks if the folder we are writing the files to needs admin.
+    if (!needFolderWriteAccess)
+        foreach (var file in files) //Checking if every file as read/write permissions in inefficient but simplifies the code a whole lot.
+        {
+            if (needFileReadAccess && needFileWriteAccess) break;
+            var permission = CheckPermissions(file);
+            needFileReadAccess = permission is not ("Write" or "Read");
+            needFileWriteAccess = permission != "Write";
+        }
+}
 
 
 switch (args[0])
 {
     case "decompress":
-
-        if (files.Length > 1 && !isAdministrator) //Only self elevate if there are multiple files to avoid UAC prompt spam.
-        {
-            if (needWriteAccess) SelfElevate();
-
-            foreach (var file in files)
-                if (CheckPermissions(file) != "Write") //Checks if file we are decompressing needs admin to write (to delete).
-                    SelfElevate();
-        }
+        if (files.Length > 1 && (needFolderWriteAccess || needFileReadAccess))
+            SelfElevate(); //Only self elevate if there are multiple files to avoid UAC prompt spam.
 
         foreach (var file in files)
         {
-            if (!isAdministrator)
-                needReadAccess = !needWriteAccess && CheckPermissions(file) == "None"; //Make sure we can read the current file.
-
             var nanaZipG = NewNanaZipGProcess("x \"" + file + "\" -o\"" +
                                               outputPath + Path.GetFileNameWithoutExtension(file) + "\"",
-                needReadAccess || needWriteAccess); //Arguments: x "[file path]" -o"[directory path]"
+                needFolderWriteAccess || needFileReadAccess); //Arguments: x "[file path]" -o"[directory path]"
             Process.Start(nanaZipG);
         }
 
         break;
     case "decompressAndRecycle":
-        if (!isAdministrator)
-        {
-            if (needWriteAccess) SelfElevate();
-            //Even if a single file needs elevation to decompress/recycle elevate the whole program to avoid UAC prompting for both NanaZip and Recycle.
-            foreach (var file in files)
-                if (CheckPermissions(file) != "Write") //Checks if file we are decompressing needs admin to write (to delete).
-                    SelfElevate();
-        }
-
+        if (needFileReadAccess || needFileWriteAccess || needFolderWriteAccess) SelfElevate();
 
         foreach (var file in files)
             new Thread(
@@ -99,10 +89,6 @@ switch (args[0])
 
         break;
     case "addToArchive":
-        if (!needWriteAccess && !isAdministrator)
-            if (files.Any(file => !needWriteAccess && CheckPermissions(file) == "None"))
-                needReadAccess = true;
-
         //NanaZip takes files separated by spaces.
         var filesAsArgument = "";
         foreach (var file in files) filesAsArgument += "\"" + file + "\" ";
@@ -110,7 +96,8 @@ switch (args[0])
         var directoryName = string.Join("\\", outputPath.Split('\\')[^2..])[..^1];
 
         var nanaZipGArchive = NewNanaZipGProcess("a \"" + directoryName + "\" -ad -saa -- " + filesAsArgument,
-            needReadAccess || needWriteAccess); //Arguments: a "[directory name]" -ad -saa -- "[file path 1]" "[file path 2]" "[file path ... x]"
+            needFolderWriteAccess ||
+            needFileReadAccess); //Arguments: a "[directory name]" -ad -saa -- "[file path 1]" "[file path 2]" "[file path ... x]"
         nanaZipGArchive.WorkingDirectory = outputPath;
 
         Process.Start(nanaZipGArchive);
@@ -173,8 +160,7 @@ static string CheckPermissions(string directory)
     foreach (FileSystemAccessRule accessRule in accessRules)
     {
         if (!currentUser.User.Equals(accessRule.IdentityReference) &&
-            !currentPrincipal.IsInRole(
-                (SecurityIdentifier)accessRule.IdentityReference))
+            !currentPrincipal.IsInRole((SecurityIdentifier)accessRule.IdentityReference))
             continue; //Skips to next loop if rule does not apply to the current user
 
         switch (accessRule.AccessControlType)
