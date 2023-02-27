@@ -15,8 +15,9 @@ The program will prompt you for administrator when needed. Either NanaZip will p
 
 ## Installation
 1. Install [ShellAnything](https://github.com/end2endzone/ShellAnything)
-2. From the [latest release](https://github.com/hboyd2003/NanaZipAlternativeContextMenu/releases/latest) download the XML file and the exe for your architecture.
+2. From the [latest release](https://github.com/hboyd2003/NanaZipAlternativeContextMenu/releases/latest) download the XML file, icons and the exe for your architecture.
 3. Place the XML file in your root ShellAnything folder (%USERPROFILE%/ShellAnything).
+4. Place the Icons in a "Icons" folder in your root Shellanything folder (%USERPROFILE%/ShellAnything/Icons).
 4. Create a "Tools" folder inside your ShellAnything folder (%USERPROFILE%/ShellAnything/Tools) and place the exe inside.
 5. Rename the exe to just "NanaZipContext.exe" 
 3. Either install [CMDUtils using Chocolatey](https://community.chocolatey.org/packages/cmdutils) or download it [directly](http://www.maddogsw.com/cmdutils/) and place the "recycle.exe" into the tools folder.
