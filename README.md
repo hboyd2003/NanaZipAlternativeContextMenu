@@ -1,5 +1,5 @@
 
-**I have moved on from [ShellAnything](https://github.com/end2endzone/ShellAnything) and now use [Nilesoft Shell](https://github.com/moudey/Shell). This implementation has some issues with it and overall doesn't work very well. I will upload a newer version later**
+**I have moved on from [ShellAnything](https://github.com/end2endzone/ShellAnything) and now use [Nilesoft Shell](https://github.com/moudey/Shell). This implementation has some issues with it and overall doesn't work very well. I would not recommend using it**
 
 # Orginal README Below
 
