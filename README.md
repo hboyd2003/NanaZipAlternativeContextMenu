@@ -1,3 +1,8 @@
+
+**I have moved on from [ShellAnything](https://github.com/end2endzone/ShellAnything) and now use [Nilesoft Shell](https://github.com/moudey/Shell). This implementation has some issues with it and overall doesn't work very well. I will upload a newer version later**
+
+# Orginal README Below
+
 # Alternative Context Menu entries for [NanaZip](https://github.com/M2Team/NanaZip)
 A flat alternative to the default [NanaZip](https://github.com/M2Team/NanaZip) context menu using [ShellAnything](https://github.com/end2endzone/ShellAnything). It also adds an entry to decompress a file and then recycle the file.
 
