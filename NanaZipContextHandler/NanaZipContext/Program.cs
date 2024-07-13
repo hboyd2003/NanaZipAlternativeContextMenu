@@ -18,7 +18,9 @@
 using System.Diagnostics;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using Microsoft.Win32;
 
+const String SUDO_ENABLED_REGISTRY_PATH = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Sudo";
 
 //Needs two arguments and a none empty file list
 if (args.Length != 2 || args[1] == "") Environment.Exit(1);
@@ -188,8 +190,50 @@ static string CheckPermissions(string directory)
     return readAllow ? "Read" : "None";
 }
 
-
 void SelfElevate()
+{
+    try
+    {
+        using RegistryKey? key = Registry.LocalMachine.OpenSubKey(SUDO_ENABLED_REGISTRY_PATH) ?? throw new FileNotFoundException($"Failed to open \"{SUDO_ENABLED_REGISTRY_PATH}\" registry key. Is Sudo not installed?");
+
+        // Verify if the key is the expected type
+        var keyType = key?.GetValueKind("Enabled");
+        if (!keyType.Equals(RegistryValueKind.DWord))
+        {
+            throw new FormatException($"Expected Sudo \"Enabled\" registry key at \"{SUDO_ENABLED_REGISTRY_PATH}\" to be DWORD but it was {keyType}");
+        }
+
+        // Get value and verify its a bool
+        var sudoEnabled = key?.GetValue("Enabled") as Boolean? ?? throw new FormatException($"Failed to convert \"Enabled\" registry key at \"{SUDO_ENABLED_REGISTRY_PATH}\" to a bool. Key value should be either a 1 or 0.");
+
+
+
+        if (sudoEnabled) selfElevateWithSudo();
+        else selfElevateWithRunas();
+    }
+    catch (Exception ex)
+    {
+        selfElevateWithRunas();
+    }
+    Environment.Exit(0);
+
+}
+
+// Self elevates with Sudo so that the pop-up shows as "Sudo" instead of the 
+void selfElevateWithSudo()
+{
+    var sudoProcessStartInfo = new ProcessStartInfo
+    {
+        UseShellExecute = true,
+        WindowStyle = ProcessWindowStyle.Hidden,
+        WorkingDirectory = Environment.CurrentDirectory,
+        FileName = "sudo",
+        Arguments = $"--inline \"sudo\" --inline \"{Environment.ProcessPath}\" \"{args[0]}\" \"{args[1]}\""
+    };
+    var sudoProcess = Process.Start(sudoProcessStartInfo);
+}
+
+void selfElevateWithRunas()
 {
     var selfElevate = new ProcessStartInfo
     {
@@ -197,8 +241,8 @@ void SelfElevate()
         Verb = "runas",
         WorkingDirectory = Environment.CurrentDirectory,
         FileName = Environment.ProcessPath,
-        Arguments = "\"" + args[0] + "\"  \"" + args[1] + "\""
+        Arguments = $"\"{args[0]}\" \"{args[1]}\""
     };
     Process.Start(selfElevate);
-    Environment.Exit(0);
+    
 }
