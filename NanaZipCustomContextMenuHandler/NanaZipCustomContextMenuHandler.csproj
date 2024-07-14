@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0-windows7.0</TargetFramework>
+        <TargetFramework>net8.0-windows</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <SignAssembly>False</SignAssembly>
@@ -21,6 +21,7 @@
         <RepositoryUrl>https://github.com/hboyd2003/NanaZipAlternativeContextMenu</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PlatformTarget>AnyCPU</PlatformTarget>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
