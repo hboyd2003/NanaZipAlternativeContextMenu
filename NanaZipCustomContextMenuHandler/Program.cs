@@ -1,5 +1,5 @@
-﻿// This is the Nanazip Alternative Context Menu.
-// Copyright © 2023 Harrison Boyd
+﻿// This is the NanaZip Alternative Context Menu.
+// Copyright © 2023-2024 Harrison Boyd
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using Microsoft.Win32;
 
-const String SUDO_ENABLED_REGISTRY_PATH = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Sudo";
+const string sudoEnabledRegistryPath = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Sudo";
 
 //Needs two arguments and a none empty file list
 if (args.Length != 2 || args[1] == "") Environment.Exit(1);
@@ -42,7 +42,8 @@ if (!new WindowsPrincipal(WindowsIdentity.GetCurrent())
     needFolderWriteAccess =
         CheckPermissions(outputPath) != "Write"; //Checks if the folder we are writing the files to needs admin.
     if (!needFolderWriteAccess)
-        foreach (var file in files) //Checking if every file as read/write permissions in inefficient but simplifies the code a whole lot.
+        foreach (var file in
+                 files) //Checking if every file as read/write permissions in inefficient but simplifies the code a lot.
         {
             if (needFileReadAccess && needFileWriteAccess) break;
             var permission = CheckPermissions(file);
@@ -92,8 +93,7 @@ switch (args[0])
         break;
     case "addToArchive":
         //NanaZip takes files separated by spaces.
-        var filesAsArgument = "";
-        foreach (var file in files) filesAsArgument += "\"" + file + "\" ";
+        var filesAsArgument = files.Aggregate("", (current, file) => current + "\"" + file + "\" ");
 
         var directoryName = string.Join("\\", outputPath.Split('\\')[^2..])[..^1];
 
@@ -109,8 +109,10 @@ switch (args[0])
         break;
 }
 
+return;
 
-//Needed otherwise arguments will be overwritten
+
+// Needed otherwise arguments will be overwritten
 static ProcessStartInfo NewNanaZipGProcess(string arguments, bool admin)
 {
     var nanaZipG = new ProcessStartInfo
@@ -127,7 +129,7 @@ static ProcessStartInfo NewNanaZipGProcess(string arguments, bool admin)
 }
 
 
-//Needed otherwise arguments will be overwritten
+// Needed otherwise arguments will be overwritten
 static ProcessStartInfo NewRecycleProcess(string arguments)
 {
     var recycle = new ProcessStartInfo
@@ -144,7 +146,7 @@ static ProcessStartInfo NewRecycleProcess(string arguments)
 
 static string CheckPermissions(string directory)
 {
-    //Gets info needed to check permissions
+    // Gets info needed to check permissions
     var currentUser = WindowsIdentity.GetCurrent();
     var currentPrincipal = new WindowsPrincipal(currentUser);
     var accessRules = new DirectoryInfo(directory).GetAccessControl()
@@ -154,7 +156,7 @@ static string CheckPermissions(string directory)
     if (currentUser.User == null) throw new Exception("Current user is Null!");
 
 
-    //A deny permission takes precedent over a allow permission
+    // A deny permission takes precedent over an allow permission
     var writeDeny = false;
     var writeAllow = false;
     var readAllow = false;
@@ -181,7 +183,7 @@ static string CheckPermissions(string directory)
                 break;
             }
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException($"Unexpected Access control type. Expected either Allow or Deny but got {accessRule.AccessControlType}!");
         }
     }
 
@@ -194,33 +196,36 @@ void SelfElevate()
 {
     try
     {
-        using RegistryKey? key = Registry.LocalMachine.OpenSubKey(SUDO_ENABLED_REGISTRY_PATH) ?? throw new FileNotFoundException($"Failed to open \"{SUDO_ENABLED_REGISTRY_PATH}\" registry key. Is Sudo not installed?");
+        using var key = Registry.LocalMachine.OpenSubKey(sudoEnabledRegistryPath) ??
+                        throw new FileNotFoundException(
+                            $"Failed to open \"{sudoEnabledRegistryPath}\" registry key. Is Sudo not installed?");
 
         // Verify if the key is the expected type
-        var keyType = key?.GetValueKind("Enabled");
+        var keyType = key.GetValueKind("Enabled");
         if (!keyType.Equals(RegistryValueKind.DWord))
         {
-            throw new FormatException($"Expected Sudo \"Enabled\" registry key at \"{SUDO_ENABLED_REGISTRY_PATH}\" to be DWORD but it was {keyType}");
+            throw new FormatException(
+                $"Expected Sudo \"Enabled\" registry key at \"{sudoEnabledRegistryPath}\" to be DWORD but it was {keyType}");
         }
 
-        // Get value and verify its a bool
-        var sudoEnabled = key?.GetValue("Enabled") as Boolean? ?? throw new FormatException($"Failed to convert \"Enabled\" registry key at \"{SUDO_ENABLED_REGISTRY_PATH}\" to a bool. Key value should be either a 1 or 0.");
+        // Get value and verify it's a bool
+        var sudoEnabled = key.GetValue("Enabled") as bool? ?? throw new FormatException(
+            $"Failed to convert \"Enabled\" registry key at \"{sudoEnabledRegistryPath}\" to a bool. Key value should be either a 1 or 0.");
 
 
-
-        if (sudoEnabled) selfElevateWithSudo();
-        else selfElevateWithRunas();
+        if (sudoEnabled) SelfElevateWithSudo();
+        else SelfElevateWithRunas();
     }
-    catch (Exception ex)
+    catch (Exception)
     {
-        selfElevateWithRunas();
+        SelfElevateWithRunas();
     }
-    Environment.Exit(0);
 
+    Environment.Exit(0);
 }
 
-// Self elevates with Sudo so that the pop-up shows as "Sudo" instead of the 
-void selfElevateWithSudo()
+// Self elevates with Sudo so that the pop-up shows as "Sudo" instead of the unsigned exe asking for elevation
+void SelfElevateWithSudo()
 {
     var sudoProcessStartInfo = new ProcessStartInfo
     {
@@ -230,10 +235,10 @@ void selfElevateWithSudo()
         FileName = "sudo",
         Arguments = $"--inline \"sudo\" --inline \"{Environment.ProcessPath}\" \"{args[0]}\" \"{args[1]}\""
     };
-    var sudoProcess = Process.Start(sudoProcessStartInfo);
+    Process.Start(sudoProcessStartInfo);
 }
 
-void selfElevateWithRunas()
+void SelfElevateWithRunas()
 {
     var selfElevate = new ProcessStartInfo
     {
@@ -244,5 +249,4 @@ void selfElevateWithRunas()
         Arguments = $"\"{args[0]}\" \"{args[1]}\""
     };
     Process.Start(selfElevate);
-    
 }
